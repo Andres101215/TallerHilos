@@ -88,10 +88,6 @@ public class MainInterface extends JFrame implements Runnable {
         Acerca = new Button("ACERCA DE ");
     }
 
-    public int random(){
-        Random random = new Random();
-      return random.nextInt(6) + 1;
-    }
 
     private void addComponents() {
         //principal.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -209,8 +205,8 @@ public class MainInterface extends JFrame implements Runnable {
     private JPanel auxiliar(String valor){
         JPanel princ = new JPanel();
         princ.setLayout(new GridLayout(2, 1));
-        JPanel op = new Dadopanel(1,1);
-        JPanel op1 = new Dadopanel(1,1);
+        JPanel op = new Dadopanel(RandomPair());
+        JPanel op1 = new Dadopanel(RandomPair());
         JPanel aux2 = new JPanel();
         aux2.setLayout(new GridLayout(1, 2));
         aux2.add(op);
@@ -218,6 +214,14 @@ public class MainInterface extends JFrame implements Runnable {
         princ.add(aux2);
         princ.add(new JLabel(valor));
         return princ;
+    }
+    public static int[] RandomPair() {
+        Random random = new Random();
+
+        int dado1 = random.nextInt(6) + 1;
+        int dado2 = random.nextInt(6) + 1;
+
+        return new int[]{dado1, dado2};
     }
 
 
