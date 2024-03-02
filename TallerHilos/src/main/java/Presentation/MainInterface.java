@@ -72,11 +72,6 @@ public class MainInterface extends JFrame implements Runnable {
         dc3 = new Dadopanel();
         dc4 = new Dadopanel();
         dc5 = new Dadopanel();
-        dc6 = new Dadopanel();
-        dc7 = new Dadopanel();
-        dc8 = new Dadopanel();
-        dc9 = new Dadopanel();
-        dc10 = new Dadopanel();
 
         Thread hilo1 = new Thread(h1);
         Thread hilo2 = new Thread(h2);
