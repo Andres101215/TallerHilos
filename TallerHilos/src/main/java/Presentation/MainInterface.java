@@ -57,21 +57,20 @@ public class MainInterface extends JFrame implements Runnable {
         panel6 = new JPanel();
         panelInf = new JPanel();
         panelSup = new JPanel();
+
         label1 = new JLabel();
         label2 = new JLabel();
         label3 = new JLabel();
         label4 = new JLabel();
         label5 = new JLabel();
+
+
         h1 = new Horario1(label1);
         h2 = new Horario2(label2);
         h3 = new Horario3(label3);
         h4 = new Horario4(label4);
         h5 = new Horario5(label5);
-        dc1 = new Dadopanel();
-        dc2 = new Dadopanel();
-        dc3 = new Dadopanel();
-        dc4 = new Dadopanel();
-        dc5 = new Dadopanel();
+
 
         Thread hilo1 = new Thread(h1);
         Thread hilo2 = new Thread(h2);
@@ -84,9 +83,14 @@ public class MainInterface extends JFrame implements Runnable {
         hilo3.start();
         hilo4.start();
         hilo5.start();
+
         start = new Button("START");
         Acerca = new Button("ACERCA DE ");
+    }
 
+    public int random(){
+        Random random = new Random();
+      return random.nextInt(6) + 1;
     }
 
     private void addComponents() {
@@ -160,7 +164,6 @@ public class MainInterface extends JFrame implements Runnable {
         Timer timer = new Timer(a, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dado.roll();
             }
         });
         timer.start();
@@ -189,7 +192,7 @@ public class MainInterface extends JFrame implements Runnable {
         panel.setLayout(new GridLayout(2, 1));
 
         JPanel panel1 = new JPanel();
-        ImageIcon imagen = new ImageIcon("./Imagenes/mariocara.png");
+        ImageIcon imagen = new ImageIcon("");
         JLabel labelImagen = new JLabel(imagen);
         panel1.add(labelImagen);
 
@@ -206,8 +209,8 @@ public class MainInterface extends JFrame implements Runnable {
     private JPanel auxiliar(String valor){
         JPanel princ = new JPanel();
         princ.setLayout(new GridLayout(2, 1));
-        JPanel op = new Dadopanel();
-        JPanel op1 = new Dadopanel();
+        JPanel op = new Dadopanel(1,1);
+        JPanel op1 = new Dadopanel(1,1);
         JPanel aux2 = new JPanel();
         aux2.setLayout(new GridLayout(1, 2));
         aux2.add(op);

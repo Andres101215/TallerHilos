@@ -4,11 +4,9 @@ import Logic.Player;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -56,5 +54,27 @@ public class ReadJson {
         return result;
     }
 
+    public void creararchivoJson(ArrayList<Player> p, String aux) {
+        try {
+            FileWriter writer = new FileWriter(aux);
+            JsonWriter jsonWriter = new JsonWriter(writer);
+
+            jsonWriter.setIndent("  ");
+
+            jsonWriter.beginArray();
+
+            for (Player producto : p) {
+                Gson gson = new Gson();
+                String json = gson.toJson(producto);
+                jsonWriter.jsonValue(json);
+            }
+
+            jsonWriter.endArray();
+
+            jsonWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
