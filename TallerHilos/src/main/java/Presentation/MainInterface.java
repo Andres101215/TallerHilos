@@ -7,6 +7,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MainInterface extends JFrame implements Runnable {
@@ -15,18 +16,18 @@ public class MainInterface extends JFrame implements Runnable {
 
     JLabel label1, label2, label3, label4, label5;
 
-    int suma1, suma2, suma3, suma4, suma5;
+    int suma1, suma2, suma3, suma4, suma5, pointsformatch;
     Horario1 h1;
     Horario2 h2;
     Horario3 h3;
     Horario4 h4;
     Horario5 h5;
-    Dadopanel dc1, dc2, dc3, dc4, dc5, dc6, dc7, dc8, dc9, dc10;
-    Button start;
+    Dadopanel dc1, dc2, dc3, dc4, dc5;
+    JButton start;
 
-    Button Acerca;
-
+    JButton Acerca;
     ReadJson read = new ReadJson();
+
 
     public MainInterface() {
         setTitle("Juego");
@@ -84,8 +85,18 @@ public class MainInterface extends JFrame implements Runnable {
         hilo4.start();
         hilo5.start();
 
-        start = new Button("START");
-        Acerca = new Button("ACERCA DE ");
+        start = new JButton("START");
+        Acerca = new JButton("ACERCA DE ");
+
+        int aux[] = {1, 1};
+
+        dc1 = new Dadopanel(aux);
+        dc2 = new Dadopanel(aux);
+        dc3 = new Dadopanel(aux);
+        dc4 = new Dadopanel(aux);
+        dc5 = new Dadopanel(aux);
+
+        pointsformatch = 0;
     }
 
 
@@ -104,7 +115,7 @@ public class MainInterface extends JFrame implements Runnable {
         panel5.setBorder(bordeGrueso4);
         panel6.setBorder(bordeGrueso5);
 
-        Dimension nuevoTamanio = new Dimension(100, 150);
+        Dimension nuevoTamanio = new Dimension(100, 200);
         panel1.setPreferredSize(nuevoTamanio);
         panel2.setPreferredSize(nuevoTamanio);
         panel3.setPreferredSize(nuevoTamanio);
@@ -131,47 +142,22 @@ public class MainInterface extends JFrame implements Runnable {
         this.add(panelInf, BorderLayout.SOUTH);
     }
 
-    private void principal(){
+    private void principal() {
 
-        panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName()), PanelHorario(label1), auxiliar("Avanzas:"));
-        panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName()), PanelHorario(label2), auxiliar("Avanzas:"));
-        panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName()), PanelHorario(label3), auxiliar("Avanzas:"));
-        panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName()), PanelHorario(label4), auxiliar("Avanzas:"));
-        panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName()), PanelHorario(label5),auxiliar("Avanzas:"));
+        panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(),"/colombia.png"), PanelHorario(label1, "", ""), auxiliar(dc1, "Avanzas:", ""));
+        panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(),"/japon.png"), PanelHorario(label2, "", ""), auxiliar(dc2, "Avanzas:", ""));
+        panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(),"/francia.png"), PanelHorario(label3, "", ""), auxiliar(dc3, "Avanzas:", ""));
+        panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(),"/inglaterra.png"), PanelHorario(label4, "", ""), auxiliar(dc4, "Avanzas:", ""));
+        panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(),"/egipto.png"), PanelHorario(label5, "", ""), auxiliar(dc5, "Avanzas:", ""));
     }
 
-    public synchronized JPanel dados(Dadopanel dcz, Dadopanel dcx,String valor) {
-        JPanel principal = new JPanel();
-        principal.setLayout(new GridLayout(2, 1));
-        Random random = new Random();
-        int randomNumber = random.nextInt(9001) + 1000;
-        JPanel op = DiceAnimation(dcz, randomNumber);
-        JPanel op1 = DiceAnimation(dcx, randomNumber);
-        JPanel aux2 = new JPanel();
-        aux2.setLayout(new GridLayout(1, 2));
-        aux2.add(op);
-        aux2.add(op1);
-        principal.add(aux2);
-        principal.add(new JLabel(valor));
-        return principal;
-    }
-
-    public synchronized JPanel DiceAnimation(Dadopanel dado,int a) {
-        Timer timer = new Timer(a, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
-        timer.start();
-        return dado;
-    }
-    private static JPanel PanelHorario(JLabel label) {
+    private static JPanel PanelHorario(JLabel label, String punto, String faltan) {
         JPanel panel = new JPanel();
+        JLabel puntos = new JLabel("Puntos: " + punto);
+        JLabel falta = new JLabel("Te faltan: " + faltan);
         panel.setLayout(new GridLayout(3, 1));
         panel.add(label);
-        JLabel lleva = new JLabel("Llevas :");
-        JLabel falta = new JLabel("Te faltan :");
-        panel.add(lleva);
+        panel.add(puntos);
         panel.add(falta);
         return panel;
     }
@@ -183,15 +169,15 @@ public class MainInterface extends JFrame implements Runnable {
         panel.add(aux3);
         return panel;
     }
-    private  JPanel ImagenesInformacion(String aux){
+
+    private JPanel ImagenesInformacion(String aux,String ruta) {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1));
 
         JPanel panel1 = new JPanel();
-        ImageIcon imagen = new ImageIcon("");
-        JLabel labelImagen = new JLabel(imagen);
-        panel1.add(labelImagen);
-
+        JLabel labelimagen= new JLabel();
+        labelimagen.setIcon(new ImageIcon(getClass().getResource(ruta)));
+        panel1.add(labelimagen);
         JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayout(1, 1));
         JLabel label1 = new JLabel(aux);
@@ -200,62 +186,159 @@ public class MainInterface extends JFrame implements Runnable {
         panel.add(panel1);
         panel.add(panel2);
 
-        return  panel;
+        return panel;
     }
-    private JPanel auxiliar(String valor){
+
+    private JPanel auxiliar(Dadopanel panel, String valor, String llevas) {
         JPanel princ = new JPanel();
-        princ.setLayout(new GridLayout(2, 1));
-        JPanel op = new Dadopanel(RandomPair());
-        JPanel op1 = new Dadopanel(RandomPair());
-        JPanel aux2 = new JPanel();
-        aux2.setLayout(new GridLayout(1, 2));
-        aux2.add(op);
-        aux2.add(op1);
-        princ.add(aux2);
+        princ.setLayout(new GridLayout(3, 1));
+        JLabel lleva = new JLabel("Llevas :" + llevas);
+        princ.add(panel);
         princ.add(new JLabel(valor));
+        princ.add(lleva);
         return princ;
     }
-    public static int[] RandomPair() {
+
+    public int[] RandomPair() {
         Random random = new Random();
+        int valor[] = new int[2];
 
-        int dado1 = random.nextInt(6) + 1;
-        int dado2 = random.nextInt(6) + 1;
+        valor[0] = random.nextInt(6) + 1;
+        valor[1] = random.nextInt(6) + 1;
 
-        return new int[]{dado1, dado2};
+        return valor;
+    }
+
+    public synchronized int randomtime() {
+        Random random = new Random();
+        int randomNumber = random.nextInt(7001) + 3000;
+        return randomNumber;
     }
 
 
     @Override
     public void run() {
         start.addActionListener((e) -> {
-
-            start.setEnabled(false);
-
-            panel1.removeAll();
-            panel2.removeAll();
-            panel3.removeAll();
-            panel4.removeAll();
-            panel5.removeAll();
+            ArrayList<Timer> Timers = new ArrayList<>();
 
 
-            panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName()), PanelHorario(label1),dados(dc1,dc2,"Avanzas:") );
-            panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName()), PanelHorario(label2), dados(dc3, dc4,"Avanzas:"));
-            panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName()), PanelHorario(label3), dados(dc5, dc6,"Avanzas:"));
-            panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName()), PanelHorario(label4), dados(dc7, dc8,"Avanzas:"));
-            panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName()), PanelHorario(label5), dados(dc9, dc10,"Avanzas:"));
+            SwingUtilities.invokeLater(() -> {
+                start.setEnabled(false);
+                pointsformatch = 200;
 
 
-            panel1.revalidate();
-            panel2.revalidate();
-            panel3.revalidate();
-            panel4.revalidate();
-            panel5.revalidate();
+                Timer timer1 = new Timer(randomtime(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (read.getPlayers().get(0).getPoints() > pointsformatch) {
+                            Timers.get(0).stop();
+                        }else {
+                            int dados1[] = RandomPair();
+                            suma1 = dados1[0] + dados1[1];
+                            read.getPlayers().get(0).setPoints(read.getPlayers().get(0).getPoints() + suma1);
+                            dc1 = new Dadopanel(dados1);
+                            int aux = pointsformatch - read.getPlayers().get(0).getPoints();
+                            aux = (aux < 0) ? 0 : aux;
+                            panel1.removeAll();
+                            panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(),"/colombia.png"), PanelHorario(label1, read.getPlayers().get(0).getScore() + "", aux+ ""), auxiliar(dc1, "Avanzas:" + suma1, read.getPlayers().get(0).getPoints() + ""));
+                            panel1.revalidate();
+                            panel1.repaint();
+                        }
+                    }
+                });
+                Timers.add(timer1);
+                timer1.start();
 
-            panel1.repaint();
-            panel2.repaint();
-            panel3.repaint();
-            panel4.repaint();
-            panel5.repaint();
+                Timer timer2 = new Timer(randomtime(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (read.getPlayers().get(1).getPoints() > pointsformatch) {
+                            Timers.get(1).stop();
+                        }else {
+                            int dados2[] = RandomPair();
+                            suma2 = dados2[0] + dados2[1];
+                            read.getPlayers().get(1).setPoints(read.getPlayers().get(1).getPoints() + suma2);
+                            dc2 = new Dadopanel(dados2);
+                            int aux = pointsformatch - read.getPlayers().get(1).getPoints();
+                            aux = (aux < 0) ? 0 : aux;
+                            panel2.removeAll();
+                            panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(),"/japon.png"), PanelHorario(label2, read.getPlayers().get(1).getScore() + "", aux+ ""), auxiliar(dc2, "Avanzas:" + suma2, read.getPlayers().get(1).getPoints() + ""));
+                            panel2.revalidate();
+                            panel2.repaint();
+                        }
+                    }
+                });
+                Timers.add(timer2);
+                timer2.start();
+
+                Timer timer3 = new Timer(randomtime(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (read.getPlayers().get(2).getPoints() > pointsformatch) {
+                            Timers.get(2).stop();
+                        }else {
+                            int dados3[] = RandomPair();
+                            suma3 = dados3[0] + dados3[1];
+                            read.getPlayers().get(2).setPoints(read.getPlayers().get(2).getPoints() + suma3);
+                            dc3 = new Dadopanel(dados3);
+                            int aux = pointsformatch - read.getPlayers().get(2).getPoints();
+                            aux = (aux < 0) ? 0 : aux;
+                            panel3.removeAll();
+                            panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(),"/francia.png"), PanelHorario(label3, read.getPlayers().get(2).getScore() + "", aux + ""), auxiliar(dc3, "Avanzas:" + suma3, read.getPlayers().get(2).getPoints() + ""));
+                            panel3.revalidate();
+                            panel3.repaint();
+                        }
+
+                    }
+                });
+                Timers.add(timer3);
+                timer3.start();
+
+                Timer timer4 = new Timer(randomtime(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (read.getPlayers().get(3).getPoints() > pointsformatch) {
+                            Timers.get(3).stop();
+                        }else{
+                            int dados4[] = RandomPair();
+                            suma4 = dados4[0] + dados4[1];
+                            read.getPlayers().get(3).setPoints(read.getPlayers().get(3).getPoints() + suma4);
+                            dc4 = new Dadopanel(dados4);
+                            int aux =pointsformatch - read.getPlayers().get(3).getPoints();
+                            aux=(aux<0) ? 0:aux;
+                            panel4.removeAll();
+                            panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(),"/inglaterra.png"), PanelHorario(label4, read.getPlayers().get(3).getScore() + "", aux + ""), auxiliar(dc4, "Avanzas:" + suma4, read.getPlayers().get(3).getPoints() + ""));
+                            panel4.revalidate();
+                            panel4.repaint();
+                        }
+                    }
+                });
+                Timers.add(timer4);
+                timer4.start();
+
+                Timer timer5 = new Timer(randomtime(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (read.getPlayers().get(4).getPoints() > pointsformatch) {
+                            Timers.get(4).stop();
+                        }else {
+                            int dados5[] = RandomPair();
+                            suma5 = dados5[0] + dados5[1];
+                            read.getPlayers().get(4).setPoints(read.getPlayers().get(4).getPoints() + suma5);
+                            dc5 = new Dadopanel(dados5);
+                            int aux =pointsformatch - read.getPlayers().get(4).getPoints();
+                            aux=(aux<0) ? 0:aux;
+                            panel5.removeAll();
+                            panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(),"/egipto.png"), PanelHorario(label5, read.getPlayers().get(4).getScore() + "", aux + ""), auxiliar(dc5, "Avanzas:" + suma5, read.getPlayers().get(4).getPoints() + ""));
+                            panel5.revalidate();
+                            panel5.repaint();
+                        }
+                    }
+                });
+                Timers.add(timer5);
+                timer5.start();
+            read.creararchivoJson(read.getPlayers());
         });
-    }
+    });
+}
 }

@@ -5,22 +5,22 @@ public class Player {
     private int nWin;
     private String location;
     private int points;
-    private int nmatch;
+    private int score;
 
-    public Player(String name, int nWin, String location, int points, int nmatch) {
+    public Player(String name, int nWin, String location, int points, int score) {
         this.name = name;
         this.nWin = nWin;
         this.location = location;
         this.points = points;
-        this.nmatch = nmatch;
+        this.score = score;
     }
 
-    public int getNmatch() {
-        return nmatch;
+    public int getScore() {
+        return score;
     }
 
-    public void setNmatch(int nmatch) {
-        this.nmatch = nmatch;
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public String getName() {

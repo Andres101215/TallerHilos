@@ -2,15 +2,13 @@ package Persistence;
 
 import Logic.Player;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-import java.io.*;
-import java.lang.reflect.Type;
-import java.nio.charset.Charset;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ReadJson {
 
@@ -29,34 +27,9 @@ public class ReadJson {
         this.players = players;
     }
 
-    private String readFile() {
-        try (
-                BufferedReader input = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/Player.json"), Charset.defaultCharset()))) {
-            String line = null;
-            StringBuilder output = new StringBuilder();
-
-            while ((line = input.readLine()) != null) {
-                output.append(line);
-            }
-            return output.toString();
-        } catch (
-                IOException e) {
-            throw new RuntimeException("Error al leer el archivo", e);
-        }
-    }
-
-    public ArrayList<Player> loadPlayer() {
-        String content = readFile();
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Player>>() {
-        }.getType();
-        ArrayList<Player> result = gson.fromJson(content, type);
-        return result;
-    }
-
-    public void creararchivoJson(ArrayList<Player> p, String aux) {
+    public void creararchivoJson(ArrayList<Player> p) {
         try {
-            FileWriter writer = new FileWriter(aux);
+            FileWriter writer = new FileWriter("src//main//java//Persistence//Player.json");
             JsonWriter jsonWriter = new JsonWriter(writer);
 
             jsonWriter.setIndent("  ");
@@ -68,13 +41,33 @@ public class ReadJson {
                 String json = gson.toJson(producto);
                 jsonWriter.jsonValue(json);
             }
-
             jsonWriter.endArray();
 
             jsonWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<Player> loadPlayer() {
+        ArrayList<Player> Players1 = new ArrayList<>();
+
+        try {
+            JsonReader reader = new JsonReader(new FileReader("src//main//java//Persistence//Player.json"));
+            Gson gson = new Gson();
+
+            reader.beginArray();
+            while (reader.hasNext()) {
+                Player player = gson.fromJson(reader, Player.class);
+                Players1.add(player);
+            }
+            reader.endArray();
+            reader.close();
+        } catch (IOException e) {
+            // e.printStackTrace();
+        }
+
+        return Players1;
     }
 }
 
