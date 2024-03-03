@@ -86,6 +86,14 @@ public class MainInterface extends JFrame implements Runnable {
 
         start = new Button("START");
         Acerca = new Button("ACERCA DE ");
+
+        Acerca.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AcercaDeVentana ventanaInformacion = new AcercaDeVentana();
+                ventanaInformacion.setVisible(true);
+            }
+        });
     }
 
 
