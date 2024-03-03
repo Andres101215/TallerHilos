@@ -97,6 +97,16 @@ public class MainInterface extends JFrame implements Runnable {
         dc5 = new Dadopanel(aux);
 
         pointsformatch = 0;
+        start = new JButton("START");
+        Acerca = new JButton("ACERCA DE ");
+
+        Acerca.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AcercaDeVentana ventanaInformacion = new AcercaDeVentana();
+                ventanaInformacion.setVisible(true);
+            }
+        });
     }
 
 
