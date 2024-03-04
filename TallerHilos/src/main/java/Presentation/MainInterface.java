@@ -1,5 +1,6 @@
 package Presentation;
 
+import Logic.Player;
 import Persistence.ReadJson;
 
 import javax.swing.*;
@@ -8,6 +9,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Random;
 
 public class MainInterface extends JFrame implements Runnable {
@@ -28,7 +32,11 @@ public class MainInterface extends JFrame implements Runnable {
     JButton Acerca;
     ReadJson read = new ReadJson();
 
+    int con=0;
 
+    ArrayList<Timer> Timers = new ArrayList<>();
+
+    ArrayList<Player> players = new ArrayList<>();
     public MainInterface() {
         setTitle("Juego");
         setLayout(new BorderLayout());
@@ -154,11 +162,11 @@ public class MainInterface extends JFrame implements Runnable {
 
     private void principal() {
 
-        panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(),"/colombia.png"), PanelHorario(label1, "", ""), auxiliar(dc1, "Avanzas:", ""));
-        panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(),"/japon.png"), PanelHorario(label2, "", ""), auxiliar(dc2, "Avanzas:", ""));
-        panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(),"/francia.png"), PanelHorario(label3, "", ""), auxiliar(dc3, "Avanzas:", ""));
-        panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(),"/inglaterra.png"), PanelHorario(label4, "", ""), auxiliar(dc4, "Avanzas:", ""));
-        panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(),"/egipto.png"), PanelHorario(label5, "", ""), auxiliar(dc5, "Avanzas:", ""));
+        panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png"), PanelHorario(label1, "", ""), auxiliar(dc1, "Avanzas:", ""));
+        panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png"), PanelHorario(label2, "", ""), auxiliar(dc2, "Avanzas:", ""));
+        panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png"), PanelHorario(label3, "", ""), auxiliar(dc3, "Avanzas:", ""));
+        panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(), "/inglaterra.png"), PanelHorario(label4, "", ""), auxiliar(dc4, "Avanzas:", ""));
+        panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(), "/egipto.png"), PanelHorario(label5, "", ""), auxiliar(dc5, "Avanzas:", ""));
     }
 
     private static JPanel PanelHorario(JLabel label, String punto, String faltan) {
@@ -180,12 +188,12 @@ public class MainInterface extends JFrame implements Runnable {
         return panel;
     }
 
-    private JPanel ImagenesInformacion(String aux,String ruta) {
+    private JPanel ImagenesInformacion(String aux, String ruta) {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1));
 
         JPanel panel1 = new JPanel();
-        JLabel labelimagen= new JLabel();
+        JLabel labelimagen = new JLabel();
         labelimagen.setIcon(new ImageIcon(getClass().getResource(ruta)));
         panel1.add(labelimagen);
         JPanel panel2 = new JPanel();
@@ -224,25 +232,37 @@ public class MainInterface extends JFrame implements Runnable {
         int randomNumber = random.nextInt(7001) + 3000;
         return randomNumber;
     }
-
-
+    public void asignarPuntuacion(ArrayList<Player> aux){
+        for (Player p:aux) {
+            System.out.println(p.getName());
+        }
+        aux.get(0).setScore(5+aux.get(0).getScore());
+        aux.get(1).setScore(4+aux.get(1).getScore());
+        aux.get(2).setScore(3+aux.get(2).getScore());
+        aux.get(3).setScore(2+aux.get(3).getScore());
+        aux.get(4).setScore(1+aux.get(4).getScore());
+    }
     @Override
     public void run() {
+        pointsformatch = 200;
         start.addActionListener((e) -> {
-            ArrayList<Timer> Timers = new ArrayList<>();
-
-
             SwingUtilities.invokeLater(() -> {
-                start.setEnabled(false);
-                pointsformatch = 200;
 
+                start.setEnabled(false);
 
                 Timer timer1 = new Timer(randomtime(), new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (read.getPlayers().get(0).getPoints() > pointsformatch) {
                             Timers.get(0).stop();
-                        }else {
+                            players.add(read.getPlayers().get(0));
+                            con++;
+                            if(con==5){
+                                asignarPuntuacion(players);
+                                read.creararchivoJson(read.getPlayers());
+                            }
+
+                        } else {
                             int dados1[] = RandomPair();
                             suma1 = dados1[0] + dados1[1];
                             read.getPlayers().get(0).setPoints(read.getPlayers().get(0).getPoints() + suma1);
@@ -250,7 +270,7 @@ public class MainInterface extends JFrame implements Runnable {
                             int aux = pointsformatch - read.getPlayers().get(0).getPoints();
                             aux = (aux < 0) ? 0 : aux;
                             panel1.removeAll();
-                            panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(),"/colombia.png"), PanelHorario(label1, read.getPlayers().get(0).getScore() + "", aux+ ""), auxiliar(dc1, "Avanzas:" + suma1, read.getPlayers().get(0).getPoints() + ""));
+                            panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png"), PanelHorario(label1, read.getPlayers().get(0).getScore() + "", aux + ""), auxiliar(dc1, "Avanzas:" + suma1, read.getPlayers().get(0).getPoints() + ""));
                             panel1.revalidate();
                             panel1.repaint();
                         }
@@ -264,7 +284,14 @@ public class MainInterface extends JFrame implements Runnable {
                     public void actionPerformed(ActionEvent e) {
                         if (read.getPlayers().get(1).getPoints() > pointsformatch) {
                             Timers.get(1).stop();
-                        }else {
+                            players.add(read.getPlayers().get(1));
+                            con++;
+                            if(con==5){
+                                asignarPuntuacion(players);
+                                read.creararchivoJson(read.getPlayers());
+                            }
+
+                        } else {
                             int dados2[] = RandomPair();
                             suma2 = dados2[0] + dados2[1];
                             read.getPlayers().get(1).setPoints(read.getPlayers().get(1).getPoints() + suma2);
@@ -272,7 +299,7 @@ public class MainInterface extends JFrame implements Runnable {
                             int aux = pointsformatch - read.getPlayers().get(1).getPoints();
                             aux = (aux < 0) ? 0 : aux;
                             panel2.removeAll();
-                            panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(),"/japon.png"), PanelHorario(label2, read.getPlayers().get(1).getScore() + "", aux+ ""), auxiliar(dc2, "Avanzas:" + suma2, read.getPlayers().get(1).getPoints() + ""));
+                            panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png"), PanelHorario(label2, read.getPlayers().get(1).getScore() + "", aux + ""), auxiliar(dc2, "Avanzas:" + suma2, read.getPlayers().get(1).getPoints() + ""));
                             panel2.revalidate();
                             panel2.repaint();
                         }
@@ -285,8 +312,15 @@ public class MainInterface extends JFrame implements Runnable {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (read.getPlayers().get(2).getPoints() > pointsformatch) {
+
                             Timers.get(2).stop();
-                        }else {
+                            players.add(read.getPlayers().get(2));
+                            con++;
+                            if(con==5){
+                                asignarPuntuacion(players);
+                                read.creararchivoJson(read.getPlayers());
+                            }
+                        } else {
                             int dados3[] = RandomPair();
                             suma3 = dados3[0] + dados3[1];
                             read.getPlayers().get(2).setPoints(read.getPlayers().get(2).getPoints() + suma3);
@@ -294,11 +328,10 @@ public class MainInterface extends JFrame implements Runnable {
                             int aux = pointsformatch - read.getPlayers().get(2).getPoints();
                             aux = (aux < 0) ? 0 : aux;
                             panel3.removeAll();
-                            panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(),"/francia.png"), PanelHorario(label3, read.getPlayers().get(2).getScore() + "", aux + ""), auxiliar(dc3, "Avanzas:" + suma3, read.getPlayers().get(2).getPoints() + ""));
+                            panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png"), PanelHorario(label3, read.getPlayers().get(2).getScore() + "", aux + ""), auxiliar(dc3, "Avanzas:" + suma3, read.getPlayers().get(2).getPoints() + ""));
                             panel3.revalidate();
                             panel3.repaint();
                         }
-
                     }
                 });
                 Timers.add(timer3);
@@ -309,15 +342,23 @@ public class MainInterface extends JFrame implements Runnable {
                     public void actionPerformed(ActionEvent e) {
                         if (read.getPlayers().get(3).getPoints() > pointsformatch) {
                             Timers.get(3).stop();
-                        }else{
+                            players.add(read.getPlayers().get(3));
+                            con++;
+
+                            if(con==5){
+                                asignarPuntuacion(players);
+                                read.creararchivoJson(read.getPlayers());
+                            }
+
+                        } else {
                             int dados4[] = RandomPair();
                             suma4 = dados4[0] + dados4[1];
                             read.getPlayers().get(3).setPoints(read.getPlayers().get(3).getPoints() + suma4);
                             dc4 = new Dadopanel(dados4);
-                            int aux =pointsformatch - read.getPlayers().get(3).getPoints();
-                            aux=(aux<0) ? 0:aux;
+                            int aux = pointsformatch - read.getPlayers().get(3).getPoints();
+                            aux = (aux < 0) ? 0 : aux;
                             panel4.removeAll();
-                            panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(),"/inglaterra.png"), PanelHorario(label4, read.getPlayers().get(3).getScore() + "", aux + ""), auxiliar(dc4, "Avanzas:" + suma4, read.getPlayers().get(3).getPoints() + ""));
+                            panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(), "/inglaterra.png"), PanelHorario(label4, read.getPlayers().get(3).getScore() + "", aux + ""), auxiliar(dc4, "Avanzas:" + suma4, read.getPlayers().get(3).getPoints() + ""));
                             panel4.revalidate();
                             panel4.repaint();
                         }
@@ -325,21 +366,28 @@ public class MainInterface extends JFrame implements Runnable {
                 });
                 Timers.add(timer4);
                 timer4.start();
-
                 Timer timer5 = new Timer(randomtime(), new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (read.getPlayers().get(4).getPoints() > pointsformatch) {
                             Timers.get(4).stop();
-                        }else {
+                            players.add(read.getPlayers().get(4));
+                            con++;
+
+                            if(con==5){
+                                asignarPuntuacion(players);
+                                read.creararchivoJson(read.getPlayers());
+                            }
+
+                        } else {
                             int dados5[] = RandomPair();
                             suma5 = dados5[0] + dados5[1];
                             read.getPlayers().get(4).setPoints(read.getPlayers().get(4).getPoints() + suma5);
                             dc5 = new Dadopanel(dados5);
-                            int aux =pointsformatch - read.getPlayers().get(4).getPoints();
-                            aux=(aux<0) ? 0:aux;
+                            int aux = pointsformatch - read.getPlayers().get(4).getPoints();
+                            aux = (aux < 0) ? 0 : aux;
                             panel5.removeAll();
-                            panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(),"/egipto.png"), PanelHorario(label5, read.getPlayers().get(4).getScore() + "", aux + ""), auxiliar(dc5, "Avanzas:" + suma5, read.getPlayers().get(4).getPoints() + ""));
+                            panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(), "/egipto.png"), PanelHorario(label5, read.getPlayers().get(4).getScore() + "", aux + ""), auxiliar(dc5, "Avanzas:" + suma5, read.getPlayers().get(4).getPoints() + ""));
                             panel5.revalidate();
                             panel5.repaint();
                         }
@@ -347,8 +395,8 @@ public class MainInterface extends JFrame implements Runnable {
                 });
                 Timers.add(timer5);
                 timer5.start();
-            read.creararchivoJson(read.getPlayers());
+
+            });
         });
-    });
-}
+    }
 }
