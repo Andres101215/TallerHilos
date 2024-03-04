@@ -28,7 +28,7 @@ public class AcercaDeVentana extends JFrame {
         JPanel panelDerecho = new JPanel(new BorderLayout());
         panelDerecho.setBackground(new Color(255, 220, 77));
 
-        ImageIcon imagen = new ImageIcon("src/main/java/example/imagen.png");
+        ImageIcon imagen = new ImageIcon("src/main/resources/imagen.png");
         JLabel etiquetaImagen = new JLabel(imagen);
         panelDerecho.add(mensaje, BorderLayout.CENTER);
         panelIzquierdo.add(etiquetaImagen, BorderLayout.CENTER);
