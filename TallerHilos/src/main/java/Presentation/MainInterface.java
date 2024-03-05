@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 public class MainInterface extends JFrame  {
@@ -37,7 +39,11 @@ public class MainInterface extends JFrame  {
 
     ArrayList<Timer> Timers = new ArrayList<>();
 
+    JTextField numberOfGamesField;
     ArrayList<Player> players = new ArrayList<>();
+
+    private JSpinner numberOfGamesSpinner;
+    int numberOfGames;
 
     public MainInterface() {
         setTitle("Juego");
@@ -60,6 +66,7 @@ public class MainInterface extends JFrame  {
 
     private void beginComponents() {
         principal = new JPanel();
+        principal.setLayout(new GridLayout(1, 1));
         panel1 = new JPanel();
         panel2 = new JPanel();
         panel3 = new JPanel();
@@ -118,6 +125,8 @@ public class MainInterface extends JFrame  {
                 ventanaInformacion.setVisible(true);
             }
         });
+
+        numberOfGamesField= new JTextField();
     }
 
 
@@ -149,7 +158,7 @@ public class MainInterface extends JFrame  {
         this.add(panelInf, BorderLayout.SOUTH);
     }
     private void principal() {
-        principal.add(podioPanel(read.getPlayers()));
+        //principal.add(PanelBienvenida());
         panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png",Color.RED), PanelHorario(label1, "", "",Color.RED), auxiliar(dc1, "Avanzas:", "",Color.RED));
         panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png",Color.green), PanelHorario(label2, "", "",Color.green), auxiliar(dc2, "Avanzas:", "",Color.green));
         panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png",Color.pink), PanelHorario(label3, "", "",Color.pink), auxiliar(dc3, "Avanzas:", "",Color.pink));
@@ -236,87 +245,62 @@ public class MainInterface extends JFrame  {
         aux.get(4).setScore(1 + aux.get(4).getScore());
     }
 
-    public static JPanel podioPanel(ArrayList<Player> players) {
-        JPanel panel = new JPanel() {
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                try {
-                    File imageFile = new File("src/main/resources/podio.png");
-                    if (imageFile.exists()) {
-                        BufferedImage image = ImageIO.read(imageFile);
-                        g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        panel.setLayout(new GridLayout(1, 1));
-
-        // Solo procede si la lista 'players' no está vacía
-        if (!players.isEmpty()) {
-            int[] nuevoOrden = {3, 1, 0, 2, 4};
-
-            int[] x = {30, 250, 460, 670, 830};
-            int[] y = {400, 370, 280, 380, 450};
-            int[] aumentoAncho = {40, 20, 30, 25, 35};
-            int[] aumentoAlto = {40, 30, 20, 35, 25};
-
-            for (int i = 0; i ==4; i++) {
-                int indice = nuevoOrden[i];
-                Player player = players.get(indice);
-                String lugar = player.getLocation();
-                try {
-                    File imagenFile = new File("src/main/resources/" + lugar + ".png");
-                    if (imagenFile.exists()) {
-                        BufferedImage imagen = ImageIO.read(imagenFile);
-                        JLabel label = new JLabel(new ImageIcon(imagen));
-
-                        label.setBounds(x[i], y[i], imagen.getWidth() + aumentoAncho[i], imagen.getHeight() + aumentoAlto[i]);
-
-                        panel.add(label);
-
-                        JLabel nameLabel = new JLabel(player.getName());
-                        nameLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 20, imagen.getWidth() + 80, 20);
-                        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                        nameLabel.setBackground(Color.WHITE);
-                        nameLabel.setOpaque(true);
-                        nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
-                        panel.add(nameLabel);
-
-                        JLabel locationLabel = new JLabel(player.getLocation());
-                        locationLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 40, imagen.getWidth() + 80, 20);
-                        locationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                        locationLabel.setBackground(Color.WHITE);
-                        locationLabel.setOpaque(true);
-                        locationLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-                        panel.add(locationLabel);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return panel;
-    }
-
     public void reiniciar(){
         con=0;
         for (Player p:read.getPlayers()) {
             p.setPoints(0);
         }
         read.creararchivoJson(read.getPlayers());
-
-
         for (Timer a:Timers) {
             a.start();
         }
     }
 
+    public JPanel PanelBienvenida() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(1, 2));
+        panel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60)); // Márgenes amplios en todos los lados del panel
+
+        ImageIcon welcomeImage = new ImageIcon("src/main/resources/bienvenido.png");
+        JLabel welcomeImageLabel = new JLabel(welcomeImage);
+        panel.add(welcomeImageLabel);
+
+        JPanel numberPanel = new JPanel();
+        numberPanel.setLayout(new BorderLayout());
+        numberPanel.setBackground(new Color(254, 196, 38));
+
+        JPanel innerPanel = new JPanel();
+        innerPanel.setLayout(new GridLayout(1, 2));
+
+        JLabel instructionLabel = new JLabel("<html><div style='text-align:center;'><span style='font-size:14px;'>Bienvenido!<br>Seleccione el número de partidas:</span></div></html>");
+        innerPanel.add(instructionLabel);
+
+        numberOfGamesSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        JComponent editor = numberOfGamesSpinner.getEditor();
+        JFormattedTextField textField = ((JSpinner.DefaultEditor) editor).getTextField();
+        textField.setColumns(3);
+        textField.setFont(new Font("Arial", Font.BOLD, 140));
+        innerPanel.add(numberOfGamesSpinner);
+
+
+        numberPanel.add(innerPanel, BorderLayout.CENTER);
+
+
+        JButton confirmButton = new JButton("Confirmar");
+        confirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                numberOfGames = (int) numberOfGamesSpinner.getValue();
+                JOptionPane.showMessageDialog(panel, "Número de partidas seleccionado: " + numberOfGames);
+            }
+        });
+        numberPanel.add(confirmButton, BorderLayout.SOUTH);
+
+
+        panel.add(numberPanel);
+
+        return panel;
+    }
     public void Reiniciarjuego(){
         con=0;
         for (Player p:read.getPlayers()) {
@@ -327,12 +311,183 @@ public class MainInterface extends JFrame  {
         start.setEnabled(true);
     }
 
+    public static JPanel podioPanelPartida(ArrayList<Player> lugares) {
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                int panelWidth = getWidth();
+                int panelHeight = getHeight();
+
+                int marginLeft = 300; // Aumentado
+                int marginRight = 300; // Aumentado
+                int usableWidth = panelWidth - marginLeft - marginRight;
+
+                try {
+                    BufferedImage backgroundImage = ImageIO.read(new File("src/main/resources/metapartida.png"));
+                    Image scaledImage = backgroundImage.getScaledInstance(usableWidth, panelHeight, Image.SCALE_SMOOTH);
+                    g.drawImage(scaledImage, marginLeft, 0, null); // Ajuste de posición
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                int rectCount = lugares.size();
+                int rectHeight = 100;
+                int rectWidth = usableWidth / rectCount;
+                int rectY = panelHeight - rectHeight;
+
+                for (int i = 0; i < rectCount; i++) {
+                    Player currentPlayer = lugares.get(i);
+                    int rectX = marginLeft + i * rectWidth;
+                    g.setColor(Color.WHITE);
+                    g.fillRect(rectX, rectY, rectWidth, rectHeight);
+                    g.setColor(Color.BLACK);
+                    g.drawRect(rectX, rectY, rectWidth, rectHeight);
+
+                    int boxWidth = rectWidth; // Ancho del cuadro de texto
+                    int boxHeight = rectHeight / 3; // Altura del cuadro de texto
+                    int x = rectX;
+                    int y = rectY - rectHeight / 3; // Mover el cuadro de texto arriba del rectángulo
+                    g.setColor(Color.WHITE);
+                    g.fillRect(x, y, boxWidth, boxHeight);
+
+                    g.setColor(Color.BLACK);
+                    g.setFont(new Font("Arial", Font.BOLD, 12)); // Tamaño del texto ajustado
+                    String playerScore = String.valueOf(currentPlayer.getScore());
+                    int stringWidth = g.getFontMetrics().stringWidth("Score: " + playerScore);
+                    int stringHeight = g.getFontMetrics().getHeight();
+                    int textX = rectX + (rectWidth - stringWidth) / 2;
+                    int textY = y + stringHeight; // Ajuste de la posición vertical del texto
+                    g.drawString("Score: " + playerScore, textX, textY); // Puntuación
+
+                    try {
+                        BufferedImage image = ImageIO.read(new File("src/main/resources/" + currentPlayer.getLocation() + ".png"));
+                        Image scaledImage = image.getScaledInstance(rectWidth, rectHeight, Image.SCALE_SMOOTH);
+                        g.drawImage(scaledImage, rectX, rectY, null);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    g.drawRect(x, y, boxWidth, boxHeight);
+                }
+
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, marginLeft, panelHeight); // Margen izquierdo
+                g.fillRect(panelWidth - marginRight, 0, marginRight, panelHeight); // Margen derecho
+            }
+        };
+        return panel;
+    }
+
+    public static JPanel podioPanelFinal(ArrayList<Player> lugares) {
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                int panelWidth = getWidth();
+                int panelHeight = getHeight();
+
+                int marginLeft = 300; // Aumentado
+                int marginRight = 300; // Aumentado
+                int usableWidth = panelWidth - marginLeft - marginRight;
+
+                Color marginColor = new Color(254, 196, 38); // Color #FEC426
+                g.setColor(marginColor);
+
+                g.fillRect(0, 0, marginLeft, panelHeight); // Margen izquierdo
+                g.fillRect(panelWidth - marginRight, 0, marginRight, panelHeight); // Margen derecho
+
+                try {
+                    BufferedImage backgroundImage = ImageIO.read(new File("src/main/resources/metafinal.png"));
+                    Image scaledImage = backgroundImage.getScaledInstance(usableWidth, panelHeight, Image.SCALE_SMOOTH);
+                    g.drawImage(scaledImage, marginLeft, 0, null); // Ajuste de posición
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                int rectCount = lugares.size();
+                int rectHeight = 100;
+                int rectWidth = usableWidth / rectCount;
+                int rectY = panelHeight - rectHeight;
+
+                for (int i = 0; i < rectCount; i++) {
+                    Player currentPlayer = lugares.get(i);
+                    int rectX = marginLeft + i * rectWidth;
+                    g.setColor(Color.WHITE);
+                    g.fillRect(rectX, rectY, rectWidth, rectHeight);
+                    g.setColor(Color.BLACK);
+                    g.drawRect(rectX, rectY, rectWidth, rectHeight);
+
+                    int boxWidth = rectWidth; // Ancho del cuadro de texto
+                    int boxHeight = rectHeight / 3; // Altura del cuadro de texto
+                    int x = rectX;
+                    int y = rectY - rectHeight / 3; // Mover el cuadro de texto arriba del rectángulo
+                    g.setColor(Color.WHITE);
+                    g.fillRect(x, y, boxWidth, boxHeight);
+
+                    g.setColor(Color.BLACK);
+                    g.setFont(new Font("Arial", Font.BOLD, 12)); // Tamaño del texto ajustado
+                    String playerScore = String.valueOf(currentPlayer.getScore());
+                    int stringWidth = g.getFontMetrics().stringWidth("Score: " + playerScore);
+                    int stringHeight = g.getFontMetrics().getHeight();
+                    int textX = rectX + (rectWidth - stringWidth) / 2;
+                    int textY = y + stringHeight; // Ajuste de la posición vertical del texto
+                    g.drawString("Score: " + playerScore, textX, textY); // Puntuación
+
+                    try {
+                        BufferedImage image = ImageIO.read(new File("src/main/resources/" + currentPlayer.getLocation() + ".png"));
+                        Image scaledImage = image.getScaledInstance(rectWidth, rectHeight, Image.SCALE_SMOOTH);
+                        g.drawImage(scaledImage, rectX, rectY, null);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    g.drawRect(x, y, boxWidth, boxHeight);
+                }
+            }
+        };
+        return panel;
+    }
+
+    public JPanel fondo() {
+        // Crear el panel principal
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Cargar la imagen de fondo
+                ImageIcon backgroundImage = new ImageIcon("src/main/resources/fondo.jpg");
+                // Dibujar la imagen de fondo
+                g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), null);
+            }
+        };
+
+        // Establecer el layout del panel principal
+        panel.setLayout(new BorderLayout());
+
+        // Agregar márgenes más grandes a los lados y arriba/abajo
+        panel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
+
+        return panel;
+    }
+
+
     public void runner() {
         pointsformatch = 200;
+        partidas=numberOfGames;
+        principal.removeAll();
+        principal.add(PanelBienvenida());
+        principal.revalidate();
+        principal.repaint();
         start.addActionListener((e) -> {
             SwingUtilities.invokeLater(() -> {
-
                   start.setEnabled(false);
+                principal.removeAll();
+                principal.add(fondo());
+                principal.revalidate();
+                principal.repaint();
 
                   Timer timer1 = new Timer(randomtime(), new ActionListener() {
                       @Override
@@ -346,12 +501,13 @@ public class MainInterface extends JFrame  {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
-                                      principal.removeAll();
-                                      principal.add(podioPanel(players));
-                                      principal.revalidate();
-                                      principal.repaint();
+
                                       Reiniciarjuego();
                                   }else{
+                                      principal.removeAll();
+                                      principal.add(podioPanelPartida(players));
+                                      principal.revalidate();
+                                      principal.repaint();
                                       reiniciar();
                                   }
                               }
@@ -384,12 +540,13 @@ public class MainInterface extends JFrame  {
                                   asignarPuntuacion(read.getPlayers());
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
-                                      principal.removeAll();
-                                      principal.add(podioPanel(players));
-                                      principal.revalidate();
-                                      principal.repaint();
+
                                       Reiniciarjuego();
                                   }else{
+                                      principal.removeAll();
+                                      principal.add(podioPanelPartida(players));
+                                      principal.revalidate();
+                                      principal.repaint();
                                       reiniciar();
                                   }
                               }
@@ -423,12 +580,13 @@ public class MainInterface extends JFrame  {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
-                                      principal.removeAll();
-                                      principal.add(podioPanel(players));
-                                      principal.revalidate();
-                                      principal.repaint();
+
                                       Reiniciarjuego();
                                   }else{
+                                      principal.removeAll();
+                                      principal.add(podioPanelPartida(players));
+                                      principal.revalidate();
+                                      principal.repaint();
                                       reiniciar();
                                   }
                               }
@@ -462,12 +620,12 @@ public class MainInterface extends JFrame  {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
-                                      principal.removeAll();
-                                      principal.add(podioPanel(players));
-                                      principal.revalidate();
-                                      principal.repaint();
                                       Reiniciarjuego();
                                   }else{
+                                      principal.removeAll();
+                                      principal.add(podioPanelPartida(players));
+                                      principal.revalidate();
+                                      principal.repaint();
                                       reiniciar();
                                   }
                               }
@@ -500,14 +658,13 @@ public class MainInterface extends JFrame  {
                               if (con == 5) {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
-
                                   if (partidas <= 0) {
-                                      principal.removeAll();
-                                      principal=podioPanel(players);
-                                      principal.revalidate();
-                                      principal.repaint();
                                       Reiniciarjuego();
                                   }else{
+                                      principal.removeAll();
+                                      principal.add(podioPanelPartida(players));
+                                      principal.revalidate();
+                                      principal.repaint();
                                       reiniciar();
                                   }
                               }
