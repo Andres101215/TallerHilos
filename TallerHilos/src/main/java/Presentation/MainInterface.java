@@ -149,6 +149,7 @@ public class MainInterface extends JFrame  {
         this.add(panelInf, BorderLayout.SOUTH);
     }
     private void principal() {
+        principal.add(podioPanel(read.getPlayers()));
         panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png",Color.RED), PanelHorario(label1, "", "",Color.RED), auxiliar(dc1, "Avanzas:", "",Color.RED));
         panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png",Color.green), PanelHorario(label2, "", "",Color.green), auxiliar(dc2, "Avanzas:", "",Color.green));
         panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png",Color.pink), PanelHorario(label3, "", "",Color.pink), auxiliar(dc3, "Avanzas:", "",Color.pink));
@@ -248,8 +249,15 @@ public class MainInterface extends JFrame  {
         }
     }
 
-    public JPanel podioPanel(ArrayList<Player> players) {
+    public static JPanel podioPanel(ArrayList<Player> players) {
+
+
+
+        for (Player p: players) {
+            System.out.println(p.getName());
+        }
         JPanel panel = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -265,49 +273,50 @@ public class MainInterface extends JFrame  {
             }
         };
 
-        panel.setLayout(null);
+        panel.setLayout(new GridLayout(1, 1));
 
-        int[] nuevoOrden = {3, 1, 0, 2, 4};
+        // Solo procede si la lista 'players' no está vacía
+        if (!players.isEmpty()) {
+            int[] nuevoOrden = {3, 1, 0, 2, 4};
 
-        int[] x = {30, 250, 460, 670, 830};
-        int[] y = {400, 370, 280, 380, 450};
-        int[] aumentoAncho = {40, 20, 30, 25, 35};
-        int[] aumentoAlto = {40, 30, 20, 35, 25};
+            int[] x = {30, 250, 460, 670, 830};
+            int[] y = {400, 370, 280, 380, 450};
+            int[] aumentoAncho = {40, 20, 30, 25, 35};
+            int[] aumentoAlto = {40, 30, 20, 35, 25};
 
-        int espacioEntreImagenes = 70;
+            for (int i = 0; i ==4; i++) {
+                int indice = nuevoOrden[i];
+                Player player = players.get(indice);
+                String lugar = player.getLocation();
+                try {
+                    File imagenFile = new File("src/main/resources/" + lugar + ".png");
+                    if (imagenFile.exists()) {
+                        BufferedImage imagen = ImageIO.read(imagenFile);
+                        JLabel label = new JLabel(new ImageIcon(imagen));
 
-        for (int i = 0; i < players.size(); i++) {
-            int indice = nuevoOrden[i];
-            Player player = players.get(indice);
-            String lugar = player.getLocation();
-            try {
-                File imagenFile = new File("src/main/resources/" + lugar + ".png");
-                if (imagenFile.exists()) {
-                    BufferedImage imagen = ImageIO.read(imagenFile);
-                    JLabel label = new JLabel(new ImageIcon(imagen));
+                        label.setBounds(x[i], y[i], imagen.getWidth() + aumentoAncho[i], imagen.getHeight() + aumentoAlto[i]);
 
-                    label.setBounds(x[i], y[i], imagen.getWidth() + aumentoAncho[i], imagen.getHeight() + aumentoAlto[i]);
+                        panel.add(label);
 
-                    panel.add(label);
+                        JLabel nameLabel = new JLabel(player.getName());
+                        nameLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 20, imagen.getWidth() + 80, 20);
+                        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                        nameLabel.setBackground(Color.WHITE);
+                        nameLabel.setOpaque(true);
+                        nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+                        panel.add(nameLabel);
 
-                    JLabel nameLabel = new JLabel(player.getName());
-                    nameLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 20, imagen.getWidth() + 80, 20);
-                    nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                    nameLabel.setBackground(Color.WHITE);
-                    nameLabel.setOpaque(true);
-                    nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
-                    panel.add(nameLabel);
-
-                    JLabel locationLabel = new JLabel(player.getLocation());
-                    locationLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 40, imagen.getWidth() + 80, 20);
-                    locationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                    locationLabel.setBackground(Color.WHITE);
-                    locationLabel.setOpaque(true);
-                    locationLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-                    panel.add(locationLabel);
+                        JLabel locationLabel = new JLabel(player.getLocation());
+                        locationLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 40, imagen.getWidth() + 80, 20);
+                        locationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                        locationLabel.setBackground(Color.WHITE);
+                        locationLabel.setOpaque(true);
+                        locationLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                        panel.add(locationLabel);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
 
@@ -343,7 +352,7 @@ public class MainInterface extends JFrame  {
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
                                       principal.removeAll();
-                                      principal=podioPanel(read.getPlayers());
+                                      principal.add(podioPanel(players));
                                       principal.revalidate();
                                       principal.repaint();
                                       Reiniciarjuego();
@@ -381,7 +390,7 @@ public class MainInterface extends JFrame  {
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
                                       principal.removeAll();
-                                      principal=podioPanel(players);
+                                      principal.add(podioPanel(players));
                                       principal.revalidate();
                                       principal.repaint();
                                       Reiniciarjuego();
@@ -419,7 +428,7 @@ public class MainInterface extends JFrame  {
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
                                       principal.removeAll();
-                                      principal=podioPanel(read.getPlayers());
+                                      principal.add(podioPanel(players));
                                       principal.revalidate();
                                       principal.repaint();
                                       Reiniciarjuego();
@@ -457,7 +466,7 @@ public class MainInterface extends JFrame  {
                                   read.creararchivoJson(read.getPlayers());
                                   if (partidas <= 0) {
                                       principal.removeAll();
-                                      principal=podioPanel(read.getPlayers());
+                                      principal.add(podioPanel(players));
                                       principal.revalidate();
                                       principal.repaint();
                                       Reiniciarjuego();
@@ -496,7 +505,7 @@ public class MainInterface extends JFrame  {
 
                                   if (partidas <= 0) {
                                       principal.removeAll();
-                                      principal=podioPanel(read.getPlayers());
+                                      principal=podioPanel(players);
                                       principal.revalidate();
                                       principal.repaint();
                                       Reiniciarjuego();
@@ -504,7 +513,6 @@ public class MainInterface extends JFrame  {
                                       reiniciar();
                                   }
                               }
-
                           } else {
                               int dados5[] = RandomPair();
                               suma5 = dados5[0] + dados5[1];
