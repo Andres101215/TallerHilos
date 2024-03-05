@@ -236,26 +236,7 @@ public class MainInterface extends JFrame  {
         aux.get(4).setScore(1 + aux.get(4).getScore());
     }
 
-    public void reiniciar(){
-        con=0;
-        for (Player p:read.getPlayers()) {
-            p.setPoints(0);
-        }
-        read.creararchivoJson(read.getPlayers());
-        partidas--;
-
-        for (Timer a:Timers) {
-            a.start();
-        }
-    }
-
     public static JPanel podioPanel(ArrayList<Player> players) {
-
-
-
-        for (Player p: players) {
-            System.out.println(p.getName());
-        }
         JPanel panel = new JPanel() {
 
             @Override
@@ -323,6 +304,19 @@ public class MainInterface extends JFrame  {
         return panel;
     }
 
+    public void reiniciar(){
+        con=0;
+        for (Player p:read.getPlayers()) {
+            p.setPoints(0);
+        }
+        read.creararchivoJson(read.getPlayers());
+
+
+        for (Timer a:Timers) {
+            a.start();
+        }
+    }
+
     public void Reiniciarjuego(){
         con=0;
         for (Player p:read.getPlayers()) {
@@ -346,6 +340,7 @@ public class MainInterface extends JFrame  {
                           if (read.getPlayers().get(0).getPoints() >= pointsformatch) {
                               Timers.get(0).stop();
                               players.add(read.getPlayers().get(0));
+                              partidas--;
                               con++;
                               if (con == 5) {
                                   asignarPuntuacion(players);
@@ -356,7 +351,6 @@ public class MainInterface extends JFrame  {
                                       principal.revalidate();
                                       principal.repaint();
                                       Reiniciarjuego();
-
                                   }else{
                                       reiniciar();
                                   }
@@ -384,6 +378,7 @@ public class MainInterface extends JFrame  {
                           if (read.getPlayers().get(1).getPoints() >= pointsformatch) {
                               Timers.get(1).stop();
                               players.add(read.getPlayers().get(1));
+                              partidas--;
                               con++;
                               if (con == 5) {
                                   asignarPuntuacion(read.getPlayers());
@@ -422,6 +417,7 @@ public class MainInterface extends JFrame  {
 
                               Timers.get(2).stop();
                               players.add(read.getPlayers().get(2));
+                              partidas--;
                               con++;
                               if (con == 5) {
                                   asignarPuntuacion(players);
@@ -459,6 +455,7 @@ public class MainInterface extends JFrame  {
                           if (read.getPlayers().get(3).getPoints() >= pointsformatch) {
                               Timers.get(3).stop();
                               players.add(read.getPlayers().get(3));
+                              partidas--;
                               con++;
 
                               if (con == 5) {
@@ -497,6 +494,7 @@ public class MainInterface extends JFrame  {
                           if (read.getPlayers().get(4).getPoints() >= pointsformatch) {
                               Timers.get(4).stop();
                               players.add(read.getPlayers().get(4));
+                              partidas--;
                               con++;
 
                               if (con == 5) {
