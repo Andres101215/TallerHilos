@@ -3,11 +3,15 @@ package Presentation;
 import Logic.Player;
 import Persistence.ReadJson;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -29,7 +33,7 @@ public class MainInterface extends JFrame  {
     JButton Acerca;
     ReadJson read = new ReadJson();
 
-    int con = 0,partidas=5;
+    int con = 0,partidas=1;
 
     ArrayList<Timer> Timers = new ArrayList<>();
 
@@ -118,20 +122,6 @@ public class MainInterface extends JFrame  {
 
 
     private void addComponents() {
-        //principal.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        Border bordeGrueso = BorderFactory.createLineBorder(Color.red, 3);
-        Border bordeGrueso1 = BorderFactory.createLineBorder(Color.green, 3);
-        Border bordeGrueso2 = BorderFactory.createLineBorder(Color.pink, 3);
-        Border bordeGrueso3 = BorderFactory.createLineBorder(Color.blue, 3);
-        Border bordeGrueso4 = BorderFactory.createLineBorder(Color.orange, 3);
-        Border bordeGrueso5 = BorderFactory.createLineBorder(Color.black, 3);
-        panel1.setBorder(bordeGrueso);
-        panel2.setBorder(bordeGrueso1);
-        panel3.setBorder(bordeGrueso2);
-        panel4.setBorder(bordeGrueso3);
-        panel5.setBorder(bordeGrueso4);
-        panel6.setBorder(bordeGrueso5);
-
         Dimension nuevoTamanio = new Dimension(100, 200);
         panel1.setPreferredSize(nuevoTamanio);
         panel2.setPreferredSize(nuevoTamanio);
@@ -159,15 +149,16 @@ public class MainInterface extends JFrame  {
         this.add(panelInf, BorderLayout.SOUTH);
     }
     private void principal() {
-        panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png"), PanelHorario(label1, "", ""), auxiliar(dc1, "Avanzas:", ""));
-        panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png"), PanelHorario(label2, "", ""), auxiliar(dc2, "Avanzas:", ""));
-        panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png"), PanelHorario(label3, "", ""), auxiliar(dc3, "Avanzas:", ""));
-        panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(), "/inglaterra.png"), PanelHorario(label4, "", ""), auxiliar(dc4, "Avanzas:", ""));
-        panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(), "/egipto.png"), PanelHorario(label5, "", ""), auxiliar(dc5, "Avanzas:", ""));
+        panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png",Color.RED), PanelHorario(label1, "", "",Color.RED), auxiliar(dc1, "Avanzas:", "",Color.RED));
+        panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png",Color.green), PanelHorario(label2, "", "",Color.green), auxiliar(dc2, "Avanzas:", "",Color.green));
+        panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png",Color.pink), PanelHorario(label3, "", "",Color.pink), auxiliar(dc3, "Avanzas:", "",Color.pink));
+        panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(), "/inglaterra.png",Color.CYAN), PanelHorario(label4, "", "",Color.CYAN), auxiliar(dc4, "Avanzas:", "",Color.CYAN));
+        panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(), "/egipto.png",Color.orange), PanelHorario(label5, "", "",Color.orange), auxiliar(dc5, "Avanzas:", "",Color.orange));
     }
 
-    private static JPanel PanelHorario(JLabel label, String punto, String faltan) {
+    private static JPanel PanelHorario(JLabel label, String punto, String faltan,Color color) {
         JPanel panel = new JPanel();
+        panel.setBackground(color);
         JLabel puntos = new JLabel("Puntos: " + punto);
         JLabel falta = new JLabel("Te faltan: " + faltan);
         panel.setLayout(new GridLayout(3, 1));
@@ -185,13 +176,14 @@ public class MainInterface extends JFrame  {
         return panel;
     }
 
-    private JPanel ImagenesInformacion(String aux, String ruta) {
+    private static JPanel ImagenesInformacion(String aux, String ruta,Color color) {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1));
 
         JPanel panel1 = new JPanel();
         JLabel labelimagen = new JLabel();
-        labelimagen.setIcon(new ImageIcon(getClass().getResource(ruta)));
+        labelimagen.setIcon(new ImageIcon(MainInterface.class.getResource(ruta)));
+
         panel1.add(labelimagen);
         JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayout(1, 1));
@@ -201,13 +193,18 @@ public class MainInterface extends JFrame  {
         panel.add(panel1);
         panel.add(panel2);
 
+        panel1.setBackground(color);
+        panel2.setBackground(color);
+
         return panel;
     }
 
-    private JPanel auxiliar(Dadopanel panel, String valor, String llevas) {
+    private  static JPanel auxiliar(Dadopanel panel, String valor, String llevas,Color color) {
         JPanel princ = new JPanel();
         princ.setLayout(new GridLayout(3, 1));
         JLabel lleva = new JLabel("Llevas :" + llevas);
+        panel.setBackground(color);
+        princ.setBackground(color);
         princ.add(panel);
         princ.add(new JLabel(valor));
         princ.add(lleva);
@@ -251,11 +248,86 @@ public class MainInterface extends JFrame  {
         }
     }
 
+    public JPanel podioPanel(ArrayList<Player> players) {
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    File imageFile = new File("src/main/resources/podio.png");
+                    if (imageFile.exists()) {
+                        BufferedImage image = ImageIO.read(imageFile);
+                        g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        panel.setLayout(null);
+
+        int[] nuevoOrden = {3, 1, 0, 2, 4};
+
+        int[] x = {30, 250, 460, 670, 830};
+        int[] y = {400, 370, 280, 380, 450};
+        int[] aumentoAncho = {40, 20, 30, 25, 35};
+        int[] aumentoAlto = {40, 30, 20, 35, 25};
+
+        int espacioEntreImagenes = 70;
+
+        for (int i = 0; i < players.size(); i++) {
+            int indice = nuevoOrden[i];
+            Player player = players.get(indice);
+            String lugar = player.getLocation();
+            try {
+                File imagenFile = new File("src/main/resources/" + lugar + ".png");
+                if (imagenFile.exists()) {
+                    BufferedImage imagen = ImageIO.read(imagenFile);
+                    JLabel label = new JLabel(new ImageIcon(imagen));
+
+                    label.setBounds(x[i], y[i], imagen.getWidth() + aumentoAncho[i], imagen.getHeight() + aumentoAlto[i]);
+
+                    panel.add(label);
+
+                    JLabel nameLabel = new JLabel(player.getName());
+                    nameLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 20, imagen.getWidth() + 80, 20);
+                    nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    nameLabel.setBackground(Color.WHITE);
+                    nameLabel.setOpaque(true);
+                    nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+                    panel.add(nameLabel);
+
+                    JLabel locationLabel = new JLabel(player.getLocation());
+                    locationLabel.setBounds(x[i] - 40, y[i] + imagen.getHeight() + 40, imagen.getWidth() + 80, 20);
+                    locationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    locationLabel.setBackground(Color.WHITE);
+                    locationLabel.setOpaque(true);
+                    locationLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                    panel.add(locationLabel);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return panel;
+    }
+
+    public void Reiniciarjuego(){
+        con=0;
+        for (Player p:read.getPlayers()) {
+            p.setPoints(0);
+            p.setScore(0);
+        }
+        read.creararchivoJson(read.getPlayers());
+        start.setEnabled(true);
+    }
+
     public void runner() {
         pointsformatch = 200;
         start.addActionListener((e) -> {
             SwingUtilities.invokeLater(() -> {
-
 
                   start.setEnabled(false);
 
@@ -269,9 +341,17 @@ public class MainInterface extends JFrame  {
                               if (con == 5) {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
-                                  reiniciar();
-                              }
+                                  if (partidas <= 0) {
+                                      principal.removeAll();
+                                      principal=podioPanel(read.getPlayers());
+                                      principal.revalidate();
+                                      principal.repaint();
+                                      Reiniciarjuego();
 
+                                  }else{
+                                      reiniciar();
+                                  }
+                              }
                           } else {
                               int dados1[] = RandomPair();
                               suma1 = dados1[0] + dados1[1];
@@ -280,7 +360,7 @@ public class MainInterface extends JFrame  {
                               int aux = pointsformatch - read.getPlayers().get(0).getPoints();
                               aux = (aux < 0) ? 0 : aux;
                               panel1.removeAll();
-                              panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png"), PanelHorario(label1, read.getPlayers().get(0).getScore() + "", aux + ""), auxiliar(dc1, "Avanzas:" + suma1, read.getPlayers().get(0).getPoints() + ""));
+                              panel1 = PanelFinal(panel1, ImagenesInformacion(read.getPlayers().get(0).getName(), "/colombia.png",Color.RED), PanelHorario(label1, read.getPlayers().get(0).getScore() + "", aux + "",Color.RED), auxiliar(dc1, "Avanzas:" + suma1, read.getPlayers().get(0).getPoints() + "",Color.RED));
                               panel1.revalidate();
                               panel1.repaint();
                           }
@@ -297,11 +377,18 @@ public class MainInterface extends JFrame  {
                               players.add(read.getPlayers().get(1));
                               con++;
                               if (con == 5) {
-                                  asignarPuntuacion(players);
+                                  asignarPuntuacion(read.getPlayers());
                                   read.creararchivoJson(read.getPlayers());
-                                  reiniciar();
+                                  if (partidas <= 0) {
+                                      principal.removeAll();
+                                      principal=podioPanel(players);
+                                      principal.revalidate();
+                                      principal.repaint();
+                                      Reiniciarjuego();
+                                  }else{
+                                      reiniciar();
+                                  }
                               }
-
                           } else {
                               int dados2[] = RandomPair();
                               suma2 = dados2[0] + dados2[1];
@@ -310,7 +397,7 @@ public class MainInterface extends JFrame  {
                               int aux = pointsformatch - read.getPlayers().get(1).getPoints();
                               aux = (aux < 0) ? 0 : aux;
                               panel2.removeAll();
-                              panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png"), PanelHorario(label2, read.getPlayers().get(1).getScore() + "", aux + ""), auxiliar(dc2, "Avanzas:" + suma2, read.getPlayers().get(1).getPoints() + ""));
+                              panel2 = PanelFinal(panel2, ImagenesInformacion(read.getPlayers().get(1).getName(), "/japon.png",Color.green), PanelHorario(label2, read.getPlayers().get(1).getScore() + "", aux + "",Color.green), auxiliar(dc2, "Avanzas:" + suma2, read.getPlayers().get(1).getPoints() + "",Color.green));
                               panel2.revalidate();
                               panel2.repaint();
                           }
@@ -330,7 +417,15 @@ public class MainInterface extends JFrame  {
                               if (con == 5) {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
-                                  reiniciar();
+                                  if (partidas <= 0) {
+                                      principal.removeAll();
+                                      principal=podioPanel(read.getPlayers());
+                                      principal.revalidate();
+                                      principal.repaint();
+                                      Reiniciarjuego();
+                                  }else{
+                                      reiniciar();
+                                  }
                               }
                           } else {
                               int dados3[] = RandomPair();
@@ -340,7 +435,7 @@ public class MainInterface extends JFrame  {
                               int aux = pointsformatch - read.getPlayers().get(2).getPoints();
                               aux = (aux < 0) ? 0 : aux;
                               panel3.removeAll();
-                              panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png"), PanelHorario(label3, read.getPlayers().get(2).getScore() + "", aux + ""), auxiliar(dc3, "Avanzas:" + suma3, read.getPlayers().get(2).getPoints() + ""));
+                              panel3 = PanelFinal(panel3, ImagenesInformacion(read.getPlayers().get(2).getName(), "/francia.png",Color.pink), PanelHorario(label3, read.getPlayers().get(2).getScore() + "", aux + "",Color.pink), auxiliar(dc3, "Avanzas:" + suma3, read.getPlayers().get(2).getPoints() + "",Color.pink));
                               panel3.revalidate();
                               panel3.repaint();
                           }
@@ -360,7 +455,15 @@ public class MainInterface extends JFrame  {
                               if (con == 5) {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
-                                  reiniciar();
+                                  if (partidas <= 0) {
+                                      principal.removeAll();
+                                      principal=podioPanel(read.getPlayers());
+                                      principal.revalidate();
+                                      principal.repaint();
+                                      Reiniciarjuego();
+                                  }else{
+                                      reiniciar();
+                                  }
                               }
 
                           } else {
@@ -371,7 +474,7 @@ public class MainInterface extends JFrame  {
                               int aux = pointsformatch - read.getPlayers().get(3).getPoints();
                               aux = (aux < 0) ? 0 : aux;
                               panel4.removeAll();
-                              panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(), "/inglaterra.png"), PanelHorario(label4, read.getPlayers().get(3).getScore() + "", aux + ""), auxiliar(dc4, "Avanzas:" + suma4, read.getPlayers().get(3).getPoints() + ""));
+                              panel4 = PanelFinal(panel4, ImagenesInformacion(read.getPlayers().get(3).getName(), "/inglaterra.png",Color.CYAN), PanelHorario(label4, read.getPlayers().get(3).getScore() + "", aux + "",Color.CYAN), auxiliar(dc4, "Avanzas:" + suma4, read.getPlayers().get(3).getPoints() + "",Color.CYAN));
                               panel4.revalidate();
                               panel4.repaint();
                           }
@@ -390,7 +493,16 @@ public class MainInterface extends JFrame  {
                               if (con == 5) {
                                   asignarPuntuacion(players);
                                   read.creararchivoJson(read.getPlayers());
-                                  reiniciar();
+
+                                  if (partidas <= 0) {
+                                      principal.removeAll();
+                                      principal=podioPanel(read.getPlayers());
+                                      principal.revalidate();
+                                      principal.repaint();
+                                      Reiniciarjuego();
+                                  }else{
+                                      reiniciar();
+                                  }
                               }
 
                           } else {
@@ -401,7 +513,7 @@ public class MainInterface extends JFrame  {
                               int aux = pointsformatch - read.getPlayers().get(4).getPoints();
                               aux = (aux < 0) ? 0 : aux;
                               panel5.removeAll();
-                              panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(), "/egipto.png"), PanelHorario(label5, read.getPlayers().get(4).getScore() + "", aux + ""), auxiliar(dc5, "Avanzas:" + suma5, read.getPlayers().get(4).getPoints() + ""));
+                              panel5 = PanelFinal(panel5, ImagenesInformacion(read.getPlayers().get(4).getName(), "/egipto.png",Color.orange), PanelHorario(label5, read.getPlayers().get(4).getScore() + "", aux + "",Color.orange), auxiliar(dc5, "Avanzas:" + suma5, read.getPlayers().get(4).getPoints() + "",Color.orange));
                               panel5.revalidate();
                               panel5.repaint();
                           }
@@ -409,11 +521,6 @@ public class MainInterface extends JFrame  {
                   });
                   Timers.add(timer5);
                   timer5.start();
-
-                  if (partidas == 0) {
-                      start.setEnabled(true);
-                  }
-
             });
         });
     }
